@@ -1,0 +1,34 @@
+# Cấu hình cơ sở dữ liệu
+spring:
+  datasource:
+    url: jdbc:sqlite:db.sqlite
+    driver-class-name: org.sqlite.JDBC
+  jpa:
+    hibernate:
+      ddl-auto: update  # Consider using 'update' for better schema management
+    database-platform: org.hibernate.community.dialect.SQLiteDialect
+    show-sql: true
+    defer-datasource-initialization: true
+  sql:
+    init:
+      mode: always
+
+# Cấu hình JWT
+jwt:
+  key: ${v^K#V@igLXJrBvgY^%gKGy4-GsY51jrun:?C38FY?8h%]t_rd]E@nhL?de3tR>?}
+  access-token-expiration-minutes: 40
+  refresh-token-expiration-minutes: 420
+
+config:
+  domain: http://localhost:8080
+  adminId: "admin"
+
+# Cấu hình server
+server:
+  port: 8080
+
+# Cấu hình logging
+logging:
+  level:
+    org.springframework: INFO
+    com.example.server: DEBUG
