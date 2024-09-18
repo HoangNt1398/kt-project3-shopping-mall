@@ -9,6 +9,7 @@ spring:
     database-platform: org.hibernate.community.dialect.SQLiteDialect
     show-sql: true
     defer-datasource-initialization: true
+    open-in-view: false
   sql:
     init:
       mode: always
