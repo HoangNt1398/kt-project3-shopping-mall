@@ -75,6 +75,13 @@ public class ProductController {
                 new MultiResponseDto<>(responses, productPages), HttpStatus.OK);
     }
 
+    @GetMapping("/search")
+    public ResponseEntity searchProducts(@RequestParam("query") String query) {
+        List<ProductDto.Response> responses = productService.searchProducts(query);
+        return new ResponseEntity<>(
+                new MultiResponseDto<>(responses, null), HttpStatus.OK);
+    }
+
     // todo: 상품 삭제 핸들러 메서드
     @DeleteMapping("/{product-id}")
     public ResponseEntity deleteProduct(@PathVariable("product-id") Long productId){

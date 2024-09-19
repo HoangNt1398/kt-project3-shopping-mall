@@ -32,16 +32,15 @@ public class JwtTokenizer {
     @Value("${jwt.refresh-token-expiration-minutes}")
     private int refreshTokenExpirationMinutes;
 
-    public String encodeBase64SecretKey(String secretKey){
+    public String encodeBase64SecretKey(String secretKey) {
         return Encoders.BASE64.encode(secretKey.getBytes(StandardCharsets.UTF_8));
     }
 
     public String generateAccessToken(Map<String, Object> claims,
                                       String subject,
                                       Date expiration,
-                                      String base64EncodedSecretKey){
+                                      String base64EncodedSecretKey) {
         Key key = getKeyFromBase64EncodedKey(base64EncodedSecretKey);
-
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(subject)
@@ -53,9 +52,8 @@ public class JwtTokenizer {
 
     public String generateRefreshToken(String subject,
                                        Date expiration,
-                                       String base64EncodedSecretKey){
+                                       String base64EncodedSecretKey) {
         Key key = getKeyFromBase64EncodedKey(base64EncodedSecretKey);
-
         return Jwts.builder()
                 .setSubject(subject)
                 .setIssuedAt(Calendar.getInstance().getTime())
@@ -63,30 +61,23 @@ public class JwtTokenizer {
                 .signWith(key)
                 .compact();
     }
-    // jws -> 서명 받아 암호화된 토큰 정보
-    public Jws<Claims> getClaims(String jws, String base64EncodedSecretKey){
-        Key key = getKeyFromBase64EncodedKey(base64EncodedSecretKey);
 
-        Jws<Claims> claims = Jwts.parserBuilder()
+    public Jws<Claims> getClaims(String jws, String base64EncodedSecretKey) {
+        Key key = getKeyFromBase64EncodedKey(base64EncodedSecretKey);
+        return Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
                 .parseClaimsJws(jws);
-
-        return claims;
     }
 
     public Date getTokenExpiration(int expirationMinutes) {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.MINUTE, expirationMinutes);
-        Date expiration = calendar.getTime();
-
-        return expiration;
+        return calendar.getTime();
     }
 
-    private Key getKeyFromBase64EncodedKey(String base64EncodedSecretKey){
+    private Key getKeyFromBase64EncodedKey(String base64EncodedSecretKey) {
         byte[] keyBytes = Decoders.BASE64.decode(base64EncodedSecretKey);
-        SecretKey key = Keys.hmacShaKeyFor(keyBytes);
-
-        return key;
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 }

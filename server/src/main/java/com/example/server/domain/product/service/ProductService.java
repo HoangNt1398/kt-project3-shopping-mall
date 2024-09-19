@@ -1,13 +1,16 @@
 package com.example.server.domain.product.service;
 
+import com.example.server.domain.product.dto.ProductDto;
 import com.example.server.domain.product.entity.Product;
 import com.example.server.domain.product.entity.productImage.ProductDetailImage;
+import com.example.server.domain.product.mapper.ProductMapper;
 import com.example.server.domain.product.repository.ProductRepository;
 import com.example.server.domain.user.entity.User;
 import com.example.server.exception.BusinessLogicException;
 import com.example.server.exception.ExceptionCode;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +24,9 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ProductService {
+    @Value("${config.domain}")
+    private String domain;
+
     private final ProductRepository productRepository;
     @Transactional
     public Product createProduct(Product product, Map<String, Object> thumbnailMap, List<ProductDetailImage> productDetailImageList){
@@ -86,5 +92,11 @@ public class ProductService {
         thumbnailMap.put("파일",findProduct.getThumbnailImage());
         thumbnailMap.put("타입",findProduct.getThumbnailImageType());
         return thumbnailMap;
+    }
+    public List<ProductDto.Response> searchProducts(String query) {
+        List<Product> products = productRepository.findByNameContainingIgnoreCase(query);
+        return products.stream()
+                .map(product -> ProductMapper.productToResponse(product, domain))
+                .collect(Collectors.toList());
     }
 }

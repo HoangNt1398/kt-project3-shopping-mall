@@ -16,7 +16,7 @@ spring:
 
 # Cấu hình JWT
 jwt:
-  key: ${v^K#V@igLXJrBvgY^%gKGy4-GsY51jrun:?C38FY?8h%]t_rd]E@nhL?de3tR>?}
+  key: XqU4rfmKusRMK6D+d1gd9BDH71XIVmaHHadEb6wxHh4=
   access-token-expiration-minutes: 40
   refresh-token-expiration-minutes: 420
 
