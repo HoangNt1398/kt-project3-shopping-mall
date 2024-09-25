@@ -39,7 +39,7 @@ export default function BtnGrp({ receiver, phone, receivingAddress, totalPrice, 
 
     if (receiver && phone && receivingAddress !== "") {
       return await axios
-        .post(`${process.env.REACT_APP_AWS_EC2}/orders`, postData, options)
+        .post(`${process.env.REACT_APP}/orders`, postData, options)
         .then((res) => {
           // console.log(res);
           alert("주문성공!");

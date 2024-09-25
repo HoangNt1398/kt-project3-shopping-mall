@@ -29,7 +29,7 @@ public class UserService {
         setDefaultRole(user);
         User verifiedUser = verifiedAdmin(user);
         // todo : Roles가 관리자면 관리자 객체를 생성시켜 넣고 판매자면 판매자 객체를 생성시켜 넣기
-        // UserRoles 클래스와 UserAuthenticationSuccessHandler.sendAuthorization() 참고!
+        // UserRoles 클래스 và UserAuthenticationSuccessHandler.sendAuthorization() 참고!
         makeCart(verifiedUser);
         return userRepository.save(verifiedUser);
     }
@@ -56,6 +56,10 @@ public class UserService {
                 .ifPresent(newEmail -> findUser.setEmail(newEmail));
 
         return userRepository.save(findUser);
+    }
+
+    public User findUserByLoginId(String loginId) {
+        return findVerifiedUserByLoginId(loginId); // Using the existing method
     }
 
     public User findVerifiedUserById(Long userId){
@@ -87,13 +91,11 @@ public class UserService {
     }
 
     public Page<User> findUsers(Pageable pageable){
-        PageRequest of = PageRequest.of(pageable.getPageNumber() - 1,
+        PageRequest pageRequest = PageRequest.of(pageable.getPageNumber() - 1,
                 pageable.getPageSize(),
                 Sort.by("createdAt").descending());
         // Active한 User들만 가져온 후, 페이징 객체로 생성
-        Page<User> findUsers = userRepository.findAllByUserStatus(User.UserStatus.USER_ACTIVE, pageable);
-
-        return findUsers;
+        return userRepository.findAllByUserStatus(User.UserStatus.USER_ACTIVE, pageRequest);
     }
 
     public void removeUser(Long userId){
@@ -103,42 +105,43 @@ public class UserService {
         findUser.setUserStatus(User.UserStatus.USER_DELETE);
         userRepository.save(findUser);
     }
+
     private void verifiedByEmail(User user) {
-        // 로그인 ID가 존재하는지 검증하는 메서드
+        // Email đã tồn tại
         String email = user.getEmail();
         Optional<User> optionalUser = userRepository.findByEmail(email);
-        optionalUser.ifPresent(s -> {
+        optionalUser.ifPresent(existingUser -> {
             throw new BusinessLogicException(ExceptionCode.USER_EMAIL_EXISTS);
         });
     }
+
     private void verifiedByLoginId(User user) {
-        // 로그인 ID가 존재하는지 검증하는 메서드
-        String LoginId = user.getLoginId();
-        Optional<User> optionalUser = userRepository.findByLoginId(LoginId);
-        optionalUser.ifPresent(s -> {
+        // Login ID đã tồn tại
+        String loginId = user.getLoginId();
+        Optional<User> optionalUser = userRepository.findByLoginId(loginId);
+        optionalUser.ifPresent(existingUser -> {
             throw new BusinessLogicException(ExceptionCode.USER_LOGIN_ID_EXISTS);
         });
     }
 
     public User verifiedAdmin(User findUser) {
-        if (findUser.getRoles().get(0).equals("ADMIN")) {
+        if (findUser.getRoles().contains("ADMIN")) {
             Admin admin = new Admin();
             admin.setLoginId(findUser.getLoginId());
             admin.setPassword(findUser.getPassword());
             findUser.setAdmin(admin);
-            //findVerifiedAdmin(findUser);
         }
         return findUser;
     }
 
     private void makeCart(User user){
-        if(user.getRoles().contains("SELLER") || user.getRoles().contains("SELLER")){
+        if(user.getRoles().contains("SELLER")) {
             user.setCart(null);
         }
     }
 
     public void verifiedAdminRole(User findUser) {
-        if(!findUser.getRoles().get(0).equals("ADMIN")) {
+        if(!findUser.getRoles().contains("ADMIN")) {
             throw new BusinessLogicException(ExceptionCode.USER_NOT_ADMIN);
         }
     }

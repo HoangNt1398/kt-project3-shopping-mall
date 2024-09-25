@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
@@ -142,7 +143,7 @@ public class SellerService {
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.ORDER_NOT_FOUND));
         verifiedOrderStatus(order, orderStatus);
         return order;
-        }
+    }
 
 
 //    public Order findOrder(Long sellerId, Order order, Order.OrderStatus orderStatus) {
@@ -161,14 +162,14 @@ public class SellerService {
             if (orderStatus.getStatus().equals("결제대기")) {
                 throw new BusinessLogicException(ExceptionCode.COMPLETED_ORDER);}
         } else if (Objects.equals(verifiedOrderStatus, "배송 준비 중")){
-                if(orderStatus.getStatus().equals("결제대기") || orderStatus.getStatus().equals("결제완료")){
+            if(orderStatus.getStatus().equals("결제대기") || orderStatus.getStatus().equals("결제완료")){
                 throw new BusinessLogicException(ExceptionCode.COMPLETED_ORDER);}
         } else if (verifiedOrderStatus.equals("배송 준비 중")){
             if(orderStatus.getStatus().equals("결제대기") || orderStatus.getStatus().equals("결제완료")){
                 throw new BusinessLogicException(ExceptionCode.COMPLETED_ORDER);}
         } else if (verifiedOrderStatus.equals("배송 중")){
             if(orderStatus.getStatus().equals("결제대기") || orderStatus.getStatus().equals("결제완료")
-            || orderStatus.getStatus().equals("배송 준비 중")){
+                    || orderStatus.getStatus().equals("배송 준비 중")){
                 throw new BusinessLogicException(ExceptionCode.COMPLETED_ORDER);}
         } else if (verifiedOrderStatus.equals("배송 완료")){
             if(orderStatus.getStatus().equals("결제대기") || orderStatus.getStatus().equals("결제완료")

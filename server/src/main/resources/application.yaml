@@ -1,19 +1,21 @@
 # Cấu hình cơ sở dữ liệu
 spring:
   datasource:
-    url: jdbc:sqlite:db.sqlite
-    driver-class-name: org.sqlite.JDBC
+    url: jdbc:h2:mem:test
+  h2:
+    console:
+      enabled: true
+      path: /h2
   jpa:
     hibernate:
-      ddl-auto: update  # Consider using 'update' for better schema management
-    database-platform: org.hibernate.community.dialect.SQLiteDialect
+      ddl-auto: update
     show-sql: true
-    defer-datasource-initialization: true
-    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
   sql:
     init:
-      mode: always
-
+      data-locations: classpath*:db/h2/data.sql
 # Cấu hình JWT
 jwt:
   key: XqU4rfmKusRMK6D+d1gd9BDH71XIVmaHHadEb6wxHh4=

@@ -8,7 +8,7 @@ const ReviewData = () => {
   const [data, setData] = useState([]);
   const productId = useParams().productId;
 
-  const url = `${process.env.REACT_APP_AWS_EC2}/reviews/productReviews/${productId}?page=1&size=12`;
+  const url = `${process.env.REACT_APP}/reviews/productReviews/${productId}?page=1&size=12`;
   
   function isAdmin() {
     const token = localStorage.getItem('adminToken');
